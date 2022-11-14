@@ -10,7 +10,10 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -40,13 +43,42 @@ public class BadIOGUI {
      */
     public BadIOGUI() {
         final JPanel canvas = new JPanel();
+        final JPanel new_panel=new JPanel();
+        
         canvas.setLayout(new BorderLayout());
+        new_panel.setLayout(new BoxLayout(new_panel, BoxLayout.LINE_AXIS));
         final JButton write = new JButton("Write on file");
+        final JButton read=new JButton("Read from file");
+        new_panel.add(write);
+        new_panel.add(read);
+        canvas.add(new_panel);
         frame.setContentPane(canvas);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         /*
          * Handlers
          */
+        read.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(final ActionEvent e){
+                BufferedReader reader=null;
+                String line;
+                try{
+                    reader=new BufferedReader(new FileReader(PATH));
+                }catch(FileNotFoundException excp){
+                    System.out.println(excp.getMessage());
+                }
+                
+                try{
+                    while((line=reader.readLine())!=null){
+                        System.out.println(line);
+                    }
+                }catch(IOException io_excp){
+                    System.out.println(io_excp.getMessage());
+                }
+                
+               
+            }
+        });
         write.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -79,6 +111,7 @@ public class BadIOGUI {
         final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         final int sw = (int) screen.getWidth();
         final int sh = (int) screen.getHeight();
+        frame.pack();
         frame.setSize(sw / PROPORTION, sh / PROPORTION);
         /*
          * Instead of appearing at (0,0), upper left corner of the screen, this
